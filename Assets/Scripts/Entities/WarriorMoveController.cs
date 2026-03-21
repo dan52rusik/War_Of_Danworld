@@ -57,12 +57,21 @@ public class WarriorMoveController : MonoBehaviour
     private IEnumerator RotateTowardsTarget()
     {
         var rotationSpeed = _warrior.speed * 50;
-        var target = _warrior.Target;
         var rotationDuration = 2;
         while (rotationDuration > 0)
-            if (target && _warrior.TargetBattleEntity.currentHealth > 0)
+        {
+            var target = _warrior.Target;
+            var targetBattleEntity = _warrior.TargetBattleEntity;
+
+            if (target != null && targetBattleEntity != null && targetBattleEntity.currentHealth > 0)
             {
-                var targetDirection = (target.transform.position - transform.position).normalized;
+                var targetOffset = target.transform.position - transform.position;
+                if (targetOffset.sqrMagnitude <= Mathf.Epsilon)
+                {
+                    yield break;
+                }
+
+                var targetDirection = targetOffset.normalized;
                 var targetRotation = Quaternion.LookRotation(targetDirection);
                 transform.rotation =
                     Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
@@ -73,6 +82,7 @@ public class WarriorMoveController : MonoBehaviour
             {
                 yield break;
             }
+        }
     }
 
     private void OnGameOver()
@@ -118,11 +128,17 @@ public class WarriorMoveController : MonoBehaviour
 
             var target = _warrior?.Target?.transform;
 
-            if (_agent.enabled && gameObject && _warrior.Target)
+            if (_agent.enabled && gameObject && _warrior.Target != null && target != null)
                 if (Vector3.Distance(target.position, _lastTargetPosition) > _pathRecalculationTolerance)
                 {
-                    _agent.SetDestination(target.position);
-                    _lastTargetPosition = target.position;
+                    var targetPosition = target.position;
+                    if (!float.IsNaN(targetPosition.x) && !float.IsInfinity(targetPosition.x) &&
+                        !float.IsNaN(targetPosition.y) && !float.IsInfinity(targetPosition.y) &&
+                        !float.IsNaN(targetPosition.z) && !float.IsInfinity(targetPosition.z))
+                    {
+                        _agent.SetDestination(targetPosition);
+                        _lastTargetPosition = targetPosition;
+                    }
                 }
 
             yield return new WaitForSeconds(navmeshUpdateInterval);

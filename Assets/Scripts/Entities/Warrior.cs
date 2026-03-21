@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Linq;
+using UnityEngine.Events;
 using Enums;
 using UnityEngine;
 using UnityEngine.AI;
@@ -22,12 +23,18 @@ public class Warrior : BattleEntity
     private bool _canGetDamage = true;
     private SpawnManager _spawnManager;
     private GameObject _spawnManagerGameObject;
-    private int _selectTargetCount = 0;
+    private BattleEntity _observedTargetBattleEntity;
+    private UnityAction<GameObject> _targetDestroyedListener;
+    private NavMeshObstacle _navMeshObstacle;
 
     protected override void Start()
     {
         base.Start();
         _animator = GetComponent<Animator>();
+        _navMeshObstacle = GetComponentInChildren<NavMeshObstacle>();
+        if (_navMeshObstacle != null)
+            _navMeshObstacle.enabled = false;
+
         _spawnManagerGameObject = GameObject.FindWithTag("SpawnManager");
         _spawnManager = _spawnManagerGameObject.GetComponent<SpawnManager>();
         _spawnManager.OnWarriorSpawn.AddListener(x =>
@@ -94,7 +101,8 @@ public class Warrior : BattleEntity
             gameObject.layer = LayerMask.NameToLayer("Default");
             GetComponent<SphereCollider>().enabled = false;
             GetComponent<NavMeshAgent>().enabled = false;
-            GetComponentInChildren<NavMeshObstacle>().enabled = false;
+            if (_navMeshObstacle != null)
+                _navMeshObstacle.enabled = false;
             GetComponent<Rigidbody>().isKinematic = false;
             GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
             _animator.CrossFadeInFixedTime("Death", 0.1f, 0);
@@ -105,13 +113,9 @@ public class Warrior : BattleEntity
 
     public void SelectTarget(GameObject target = null, GameObject discardTarget = null, bool towardCastle = false)
     {
-        _selectTargetCount += 1;
-        Debug.Log(_selectTargetCount);
-        
-        
-        if(_spawnManager.ActiveAllies.Count <= 0 && _spawnManager.ActiveEnemies.Count <= 0)
+        if (_spawnManager.ActiveAllies.Count <= 0 && _spawnManager.ActiveEnemies.Count <= 0)
             return;
-        
+
         if (target)
         {
             SetTarget(target);
@@ -122,9 +126,10 @@ public class Warrior : BattleEntity
 
         if (towardCastle)
         {
-            var castle = targetEntities.First(warrior =>
+            var castle = targetEntities.FirstOrDefault(warrior =>
                 warrior.GetComponent<BattleEntity>().EntityType == EntityType.Castle);
             SetTarget(castle);
+            return;
         }
 
         var anyWarrior = targetEntities.Any(warrior =>
@@ -148,17 +153,42 @@ public class Warrior : BattleEntity
 
 
         SetTarget(target);
-
-        // Add a listener to select a new target when the current target is destroyed
-        TargetBattleEntity.onDestroy.AddListener(dT => { SelectTarget(discardTarget: dT); });
     }
 
     private void SetTarget(GameObject target)
     {
-        if (!target) return;
+        UnsubscribeFromTargetDestroyed();
+
+        if (!target)
+        {
+            Target = null;
+            TargetBattleEntity = null;
+            return;
+        }
 
         Target = target;
         TargetBattleEntity = target.GetComponent<BattleEntity>();
+        _observedTargetBattleEntity = TargetBattleEntity;
+
+        if (_observedTargetBattleEntity == null)
+            return;
+
+        _targetDestroyedListener = destroyedTarget => { SelectTarget(discardTarget: destroyedTarget); };
+        _observedTargetBattleEntity.onDestroy.AddListener(_targetDestroyedListener);
+    }
+
+    private void UnsubscribeFromTargetDestroyed()
+    {
+        if (_observedTargetBattleEntity != null && _targetDestroyedListener != null)
+            _observedTargetBattleEntity.onDestroy.RemoveListener(_targetDestroyedListener);
+
+        _observedTargetBattleEntity = null;
+        _targetDestroyedListener = null;
+    }
+
+    private void OnDestroy()
+    {
+        UnsubscribeFromTargetDestroyed();
     }
 
     private bool AnyOpponentAround()

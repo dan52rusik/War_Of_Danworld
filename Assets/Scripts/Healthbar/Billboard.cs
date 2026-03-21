@@ -2,34 +2,45 @@ using UnityEngine;
 
 public class Billboard : MonoBehaviour
 {
-    [SerializeField] private bool _useCameraPlaneInstead;
-    private Plane _cameraPlane;
-
     private Transform _mainCameraTransform;
 
     private void Start()
     {
-        if (Camera.main != null) _mainCameraTransform = Camera.main.transform;
-
-        var cameraPosition = _mainCameraTransform.position;
-        var planeNormal = -_mainCameraTransform.forward;
-        _cameraPlane = new Plane(planeNormal, cameraPosition)
-        {
-            distance = 100000
-        };
+        TryCacheMainCamera();
     }
 
     private void LateUpdate()
     {
-        if (_useCameraPlaneInstead)
-        {
-            var nearestPoint = _cameraPlane.ClosestPointOnPlane(transform.position);
-            transform.rotation = Quaternion.LookRotation(nearestPoint, Vector3.up);
-        }
-        else
-        {
-            var position = transform.position;
-            transform.LookAt(position + (position - _mainCameraTransform.position).normalized);
-        }
+        if (!TryCacheMainCamera())
+            return;
+
+        if (!IsFiniteVector3(_mainCameraTransform.forward) || !IsFiniteVector3(_mainCameraTransform.up))
+            return;
+
+        transform.rotation = Quaternion.LookRotation(-_mainCameraTransform.forward, _mainCameraTransform.up);
+    }
+
+    private bool TryCacheMainCamera()
+    {
+        if (_mainCameraTransform == null && Camera.main != null)
+            _mainCameraTransform = Camera.main.transform;
+
+        if (_mainCameraTransform == null)
+            return false;
+
+        var cameraForward = _mainCameraTransform.forward;
+        var cameraUp = _mainCameraTransform.up;
+        if (!IsFiniteVector3(cameraForward) || !IsFiniteVector3(cameraUp) ||
+            cameraForward.sqrMagnitude <= Mathf.Epsilon || cameraUp.sqrMagnitude <= Mathf.Epsilon)
+            return false;
+
+        return true;
+    }
+
+    private static bool IsFiniteVector3(Vector3 value)
+    {
+        return !float.IsNaN(value.x) && !float.IsInfinity(value.x) &&
+               !float.IsNaN(value.y) && !float.IsInfinity(value.y) &&
+               !float.IsNaN(value.z) && !float.IsInfinity(value.z);
     }
 }

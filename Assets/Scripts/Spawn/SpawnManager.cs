@@ -134,7 +134,6 @@ public class SpawnManager : MonoBehaviour
             ally.tag = "Ally";
             ally.layer = LayerMask.NameToLayer("Ally");
             ally.name = "Ally" + ally.name;
-            OnWarriorSpawn.Invoke(null);
         }
     }
 
@@ -150,7 +149,6 @@ public class SpawnManager : MonoBehaviour
         enemy.tag = "Enemy";
         enemy.layer = LayerMask.NameToLayer("Enemy");
         enemy.name = "Enemy" + enemy.name;
-        OnWarriorSpawn.Invoke(null);
     }
 
     private Vector3 RandomAllyPosition()

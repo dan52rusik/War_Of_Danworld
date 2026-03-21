@@ -41,7 +41,13 @@ public abstract class BattleEntity : MonoBehaviour
 
     protected void UpdateHealthBar()
     {
-        var healthPercentage = currentHealth / maxHealth;
+        if (maxHealth <= 0 || float.IsNaN(maxHealth) || float.IsInfinity(maxHealth))
+            return;
+
+        var healthPercentage = Mathf.Clamp01(currentHealth / maxHealth);
+        if (float.IsNaN(healthPercentage) || float.IsInfinity(healthPercentage))
+            return;
+
         healthBarSlider.value = healthPercentage;
         laggingHealthBar.DOValue(healthPercentage, lagDuration).SetEase(Ease.OutCubic);
     }
