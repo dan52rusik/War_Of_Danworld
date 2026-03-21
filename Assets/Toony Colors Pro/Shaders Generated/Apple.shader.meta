@@ -1,0 +1,12 @@
+fileFormatVersion: 2
+guid: 44907c59a890f48d3aeb29f30cf0c730
+ShaderImporter:
+  externalObjects: {}
+  defaultTextures:
+  - _NoTileNoiseTex: {fileID: 2800000, guid: af5515bfe14f1af4a9b8b3bf306b9261, type: 3}
+  - _Ramp: {fileID: 2800000, guid: ccad9b0732473ee4e95de81e50e9050f, type: 3}
+  nonModifiableTextures: []
+  preprocessorOverride: 0
+  userData: USER,FRIM,FRIM_VERTEX,FRIMDIR,KSHADER_TARGET:3.0,ch6390BE38,cSM:30,cCF:TCP2_ShaderTemplate_Default
+  assetBundleName: 
+  assetBundleVariant: 
