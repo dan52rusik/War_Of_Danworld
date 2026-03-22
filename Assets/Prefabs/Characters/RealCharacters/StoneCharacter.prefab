@@ -234,7 +234,7 @@ MonoBehaviour:
   _agent: {fileID: -4776133617639702000}
   navmeshUpdateInterval: 2
   _pathRecalculationTolerance: 1
-  _walkAnimationMultiplier: 4
+  _walkAnimationMultiplier: 1.5
 --- !u!114 &-224235642999178845
 MonoBehaviour:
   m_ObjectHideFlags: 0
