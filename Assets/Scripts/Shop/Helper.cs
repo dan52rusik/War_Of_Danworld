@@ -6,7 +6,7 @@ public class Helper : MonoBehaviour
 {
     public List<GameObject> warriorsGameObjects;
     public readonly Dictionary<WarriorType, Warrior> CharTypeToFeatureDict = new();
-    public static readonly Dictionary<WarriorType, GameObject> CharTypeToObjectsDict = new();
+    public readonly Dictionary<WarriorType, GameObject> CharTypeToObjectsDict = new();
 
     // Start is called before the first frame update
     private void Awake()

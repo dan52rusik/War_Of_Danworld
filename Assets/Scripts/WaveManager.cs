@@ -53,10 +53,10 @@ namespace Wave
             }
         }
 
-        private IEnumerator ShowWaveInfo(WaveConfig currenWave)
+        private IEnumerator ShowWaveInfo(WaveConfig currentWave)
         {
             _waveInfoObject.SetActive(true);
-            _waveInfo.text = currenWave.waveName;
+            _waveInfo.text = currentWave.waveName;
             yield return new WaitForSeconds(3);
             _waveInfoObject.SetActive(false);
         }

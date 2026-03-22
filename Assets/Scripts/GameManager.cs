@@ -1,6 +1,8 @@
 using System.Collections;
 using TMPro;
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -111,29 +113,39 @@ public class GameManager : MonoBehaviour
         StartCoroutine(BirdChirping());
 
         GameOver = false;
-        _enemyCastle.onDestroy.AddListener(x =>
-        {
-            GameOver = true;
-            audioSource.loop = false;
-            audioSource.clip = _winAudio;
-            audioSource.Play();
-            _mainMenuButton.SetActive(true);
-            OnGameOver.Invoke(_enemyCastle);
-            _giveUpButton.SetActive(false);
-            ShowEndGameComponents(_enemyCastle);
-        });
-        _allyCastle.onDestroy.AddListener(x =>
-        {
-            GameOver = true;
-            audioSource.loop = false;
-            audioSource.clip = _defeatAudio;
-            audioSource.Play();
-            _mainMenuButton.SetActive(true);
-            OnGameOver.Invoke(_allyCastle);
-            _giveUpButton.SetActive(false);
-            ShowEndGameComponents(_allyCastle);
-        });
+
+        // Remove previous listeners to prevent duplicates on repeated game starts
+        _enemyCastle.onDestroy.RemoveListener(OnEnemyCastleDestroyed);
+        _allyCastle.onDestroy.RemoveListener(OnAllyCastleDestroyed);
+
+        _enemyCastle.onDestroy.AddListener(OnEnemyCastleDestroyed);
+        _allyCastle.onDestroy.AddListener(OnAllyCastleDestroyed);
+
         OnGameStart.Invoke();
+    }
+
+    private void OnEnemyCastleDestroyed(GameObject obj)
+    {
+        GameOver = true;
+        audioSource.loop = false;
+        audioSource.clip = _winAudio;
+        audioSource.Play();
+        _mainMenuButton.SetActive(true);
+        OnGameOver.Invoke(_enemyCastle);
+        _giveUpButton.SetActive(false);
+        ShowEndGameComponents(_enemyCastle);
+    }
+
+    private void OnAllyCastleDestroyed(GameObject obj)
+    {
+        GameOver = true;
+        audioSource.loop = false;
+        audioSource.clip = _defeatAudio;
+        audioSource.Play();
+        _mainMenuButton.SetActive(true);
+        OnGameOver.Invoke(_allyCastle);
+        _giveUpButton.SetActive(false);
+        ShowEndGameComponents(_allyCastle);
     }
 
     private IEnumerator BirdChirping()

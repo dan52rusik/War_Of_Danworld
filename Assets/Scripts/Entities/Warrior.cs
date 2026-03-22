@@ -19,7 +19,7 @@ public class Warrior : BattleEntity
     public GameObject Target;
     public BattleEntity TargetBattleEntity;
     private Animator _animator;
-    private bool _anyOpponnentAround;
+    private bool _anyOpponentAround;
     private bool _canGetDamage = true;
     private SpawnManager _spawnManager;
     private GameObject _spawnManagerGameObject;
@@ -50,7 +50,7 @@ public class Warrior : BattleEntity
 
     private void OnTriggerEnter(Collider other)
     {
-        if (!_anyOpponnentAround)
+        if (!_anyOpponentAround)
         {
             var isAllyLayer = other.gameObject.layer == LayerMask.NameToLayer("Ally");
             var isEnemyLayer = other.gameObject.layer == LayerMask.NameToLayer("Enemy");
@@ -199,11 +199,11 @@ public class Warrior : BattleEntity
 
         if (hitColliders.Length > 0)
         {
-            _anyOpponnentAround = true;
+            _anyOpponentAround = true;
             return true;
         }
 
-        _anyOpponnentAround = false;
+        _anyOpponentAround = false;
         return false;
     }
 }

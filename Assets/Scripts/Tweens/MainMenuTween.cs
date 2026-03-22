@@ -7,7 +7,7 @@ namespace Tweens
     public class MainMenuTween : MonoBehaviour
     {
         public TMP_Text gameTitle; // The Text component to animate
-        public float targetFontSize = 30f; // The target font size to animate to
+        public float targetFontSize = 22f; // The target font size to animate to
         public float fontSizeAnimationDuration = 1f; // The duration of the animation
         public float menuButtonsAnimationDuration = 0.5f;
         [SerializeField] private GameObject menuButtons;

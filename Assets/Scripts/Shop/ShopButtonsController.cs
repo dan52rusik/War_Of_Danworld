@@ -63,10 +63,10 @@ public class ShopButtonsController : MonoBehaviour
         stickUpgradeButton.onClick.AddListener(UpgradeStickChar);
         UpdateButtonText(WarriorType.StickCharacter, stickUpgradeButton, false);
 
-        spearPurchaseButton.onClick.AddListener(PurchaseSpareChar);
+        spearPurchaseButton.onClick.AddListener(PurchaseSpearChar);
         UpdateButtonText(WarriorType.SpearCharacter, spearPurchaseButton, true);
 
-        spearUpgradeButton.onClick.AddListener(UpgradeSpareChar);
+        spearUpgradeButton.onClick.AddListener(UpgradeSpearChar);
         UpdateButtonText(WarriorType.SpearCharacter, spearUpgradeButton, false);
 
         stonePurchaseButton.onClick.AddListener(PurchaseStoneChar);
@@ -88,12 +88,12 @@ public class ShopButtonsController : MonoBehaviour
         UpgradeCharacter(WarriorType.StickCharacter, stickUpgradeButton);
     }
 
-    private void PurchaseSpareChar()
+    private void PurchaseSpearChar()
     {
         PurchaseCharacter(WarriorType.SpearCharacter, spearCharSpawnButton, spearPurchaseButton, spearUpgradeButton);
     }
 
-    private void UpgradeSpareChar()
+    private void UpgradeSpearChar()
     {
         UpgradeCharacter(WarriorType.SpearCharacter, spearUpgradeButton);
     }

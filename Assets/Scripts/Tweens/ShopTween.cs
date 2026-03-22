@@ -32,7 +32,7 @@ public class ShopTween : MonoBehaviour
     public void ToggleShopUI()
     {
         isVisible = !isVisible;
-        if (!isVisible)
+        if (isVisible)
         {
             ShowShop();
         }
