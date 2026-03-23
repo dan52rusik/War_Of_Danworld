@@ -10,8 +10,8 @@ public class BaseVisualSetup : MonoBehaviour
     [SerializeField] private GameObject enemyBase;
     [SerializeField] private string allyTowerResourcePath = "Prefabs/Tower_def_model_Ally";
     [SerializeField] private string enemyTowerResourcePath = "Prefabs/Tower_def_model_Enemy";
-    [SerializeField] private Vector3 allyTowerOffset = new(0.74f, -1.09f, -2.38f);
-    [SerializeField] private Vector3 enemyTowerOffset = new(-0.74f, -1.09f, 1.014f);
+    [SerializeField] private Vector3 allyTowerOffset = new(1f, -1f, -1.96f);
+    [SerializeField] private Vector3 enemyTowerOffset = new(-0.82f, -1f, 0.594f);
 
     private const string AllyTowerName = "Tower_def_model_Ally";
     private const string EnemyTowerName = "Tower_def_model_Enemy";
