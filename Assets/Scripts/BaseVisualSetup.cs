@@ -8,12 +8,10 @@ public class BaseVisualSetup : MonoBehaviour
 {
     [SerializeField] private GameObject allyBase;
     [SerializeField] private GameObject enemyBase;
-    [SerializeField] private string towerResourcePath = "Models/Tower_def_model";
+    [SerializeField] private string allyTowerResourcePath = "Prefabs/Tower_def_model_Ally";
+    [SerializeField] private string enemyTowerResourcePath = "Prefabs/Tower_def_model_Enemy";
     [SerializeField] private Vector3 allyTowerOffset = new(0.74f, -1.09f, -2.38f);
     [SerializeField] private Vector3 enemyTowerOffset = new(-0.74f, -1.09f, 1.014f);
-    [SerializeField] private Vector3 allyTowerEuler = new(0f, 120f, 0f);
-    [SerializeField] private Vector3 enemyTowerEuler = new(0f, 300f, 0f);
-    [SerializeField] private Vector3 towerScale = new(0.2f, 0.2f, 0.2f);
 
     private const string AllyTowerName = "Tower_def_model_Ally";
     private const string EnemyTowerName = "Tower_def_model_Enemy";
@@ -36,15 +34,19 @@ public class BaseVisualSetup : MonoBehaviour
         ToggleLegacyVisual(allyBase.transform, "AllyCastle", false);
         ToggleLegacyVisual(enemyBase.transform, "EnemyCastle", false);
 
-        var towerPrefab = Resources.Load<GameObject>(towerResourcePath);
-        if (towerPrefab == null)
+        var allyTowerPrefab = Resources.Load<GameObject>(allyTowerResourcePath);
+        var enemyTowerPrefab = Resources.Load<GameObject>(enemyTowerResourcePath);
+        if (allyTowerPrefab == null || enemyTowerPrefab == null)
             return;
 
-        var allyTower = FindOrCreateTower(towerPrefab, AllyTowerName, "Tower_def_model");
-        var enemyTower = FindOrCreateTower(towerPrefab, EnemyTowerName, "Tower_def_model (1)");
+        var allyTower = FindOrCreateTower(allyTowerPrefab, AllyTowerName, "Tower_def_model");
+        var enemyTower = FindOrCreateTower(enemyTowerPrefab, EnemyTowerName, "Tower_def_model (1)");
 
-        ConfigureTower(allyTower, allyBase.transform.position + allyTowerOffset, allyTowerEuler);
-        ConfigureTower(enemyTower, enemyBase.transform.position + enemyTowerOffset, enemyTowerEuler);
+        ConfigureTower(allyTower, allyBase.transform.position + allyTowerOffset);
+        ConfigureTower(enemyTower, enemyBase.transform.position + enemyTowerOffset);
+
+        DisableLooseLegacyTower(allyTower, enemyTower, "Tower_def_model");
+        DisableLooseLegacyTower(allyTower, enemyTower, "Tower_def_model (1)");
     }
 
     private static void ToggleLegacyVisual(Transform root, string childName, bool isActive)
@@ -52,6 +54,13 @@ public class BaseVisualSetup : MonoBehaviour
         var child = root.Find(childName);
         if (child != null && child.gameObject.activeSelf != isActive)
             child.gameObject.SetActive(isActive);
+    }
+
+    private static void DisableLooseLegacyTower(GameObject allyTower, GameObject enemyTower, string legacyName)
+    {
+        var legacyTower = GameObject.Find(legacyName);
+        if (legacyTower != null && legacyTower != allyTower && legacyTower != enemyTower)
+            legacyTower.SetActive(false);
     }
 
     private GameObject FindOrCreateTower(GameObject towerPrefab, string desiredName, string legacyName)
@@ -81,13 +90,11 @@ public class BaseVisualSetup : MonoBehaviour
         return towerInstance;
     }
 
-    private void ConfigureTower(GameObject tower, Vector3 worldPosition, Vector3 worldEulerAngles)
+    private static void ConfigureTower(GameObject tower, Vector3 worldPosition)
     {
         if (tower == null)
             return;
 
-        var towerTransform = tower.transform;
-        towerTransform.SetPositionAndRotation(worldPosition, Quaternion.Euler(worldEulerAngles));
-        towerTransform.localScale = towerScale;
+        tower.transform.position = worldPosition;
     }
 }
