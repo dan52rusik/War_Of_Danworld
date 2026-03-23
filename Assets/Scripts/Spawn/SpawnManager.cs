@@ -6,7 +6,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
-using Random = UnityEngine.Random;
 
 public class SpawnManager : MonoBehaviour
 {
@@ -128,7 +127,7 @@ public class SpawnManager : MonoBehaviour
     {
         if (_shopManager.CanInstantiate(type) && !_gameManager.GameOver)
         {
-            var ally = Instantiate(_warriors[(int)type], RandomAllyPosition(), _allySpawnPoint.transform.rotation);
+            var ally = Instantiate(_warriors[(int)type], SpawnPosition(_allySpawnPoint), _allySpawnPoint.transform.rotation);
             ActiveAllies.Add(ally);
             _shopManager.PayForInstantiate(type);
             ally.tag = "Ally";
@@ -139,23 +138,15 @@ public class SpawnManager : MonoBehaviour
 
     public void InstantiateEnemy(WarriorType warrior)
     {
-        var spawnPoint = _enemySpawnPoint;
-        float randomSpawnLoc = Random.Range(-2, 2);
-
-        var spawnPos = new Vector3(spawnPoint.transform.position.x, spawnPoint.transform.position.y,
-            spawnPoint.transform.position.z + randomSpawnLoc);
-        var enemy = Instantiate(_warriors[(int)warrior], spawnPos, spawnPoint.transform.rotation);
+        var enemy = Instantiate(_warriors[(int)warrior], SpawnPosition(_enemySpawnPoint), _enemySpawnPoint.transform.rotation);
         ActiveEnemies.Add(enemy);
         enemy.tag = "Enemy";
         enemy.layer = LayerMask.NameToLayer("Enemy");
         enemy.name = "Enemy" + enemy.name;
     }
 
-    private Vector3 RandomAllyPosition()
+    private static Vector3 SpawnPosition(GameObject spawnPoint)
     {
-        var spawnPoint = _allySpawnPoint;
-        float randomSpawnLoc = Random.Range(-2, 2);
-        return new Vector3(spawnPoint.transform.position.x, spawnPoint.transform.position.y,
-            spawnPoint.transform.position.z + randomSpawnLoc);
+        return spawnPoint.transform.position;
     }
 }
